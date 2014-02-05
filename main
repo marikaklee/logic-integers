@@ -1,0 +1,211 @@
+# Marika Lee
+# Assignment 1: Logic, Integers, Sets, and Relations
+# Due 1/29/14
+
+################## FROM THE LECTURE NOTES ##################
+
+def forall(X, P):
+  S = {x for x in X if P(x)}
+  return len(S) == len(X)
+
+
+def exists(X, P):
+  S = {x for x in X if P(x)}
+  return len(S) > 0
+
+def subset(X,Y):
+  return forall(X, lambda x: x in Y)
+
+def quotient(X, R):
+    return {frozenset({y for y in X if (x,y) in R}) for x in X}
+
+################## FROM THE LECTURE NOTES ##################
+
+
+##########################################################
+##################### -- QUESTION 1 -- ######################
+
+#(a) SYMMETRIC RELATION 
+def product(X,Y):
+     return {(x,y) for x in X for y in Y}
+
+def implies (x,y):
+     return x <= y
+
+def isSymmetric(X,R):
+     A =product(X,X) #product of all elements
+     
+     B = {(y,x) for x,y in R} #check if (y,x) applies to subset A
+     
+     return subset (B, A) and forall (X, lambda x: forall (X, lambda y: implies ((x,y) in R, (y,x) in R)))
+
+
+#(b) EQUIVALENCE RELATION = reflexive, symmetric and transitive!!!
+def isTransitive(X,R):
+     A = product (X,X) #product of all elements 
+     
+     return subset(R, A)  and\
+            forall (X, lambda x: \
+                    forall(X, lambda y: \
+                           forall(X, lambda z: \
+                                  implies ((x,y) in R and (y,z) in R , (x,z) in R))))
+ 
+def isReflexive (X, R):
+      A =product (X,X)
+      
+      return subset (R, A) and forall (X, lambda x: (x,x) in R)
+     
+def isEquivalence (X,R):
+     return isTransitive(X,R) and isReflexive(X,R) and isSymmetric(X,R)
+
+##########################################################
+##################### -- QUESTION 2 -- #####################
+
+#------------------(a) ------------------
+X1 = {"a","b","c","d"}
+R1 = {("a","a"), ("b","b"), ("c","c"),("d","d"),("a","b"),("b","a"),("c","d"),("d","c")}
+
+#------------------ (b) ------------------
+X2 = {0,1,2,3,4,5}
+R2 = {(0,0),(1,1),(2,2),(3,3),(4,4),(5,5),(0,3),(3,0),(1,4),(4,1),(2,5),(5,2)}
+
+#------------------ (c) ------------------
+
+'''def product2(X,R):
+  return {(x,x) for x in X}
+
+X3 = set(range(-10, 11))
+product = product2(X3,X3)
+
+def productPositive(X,Y):
+  return {(x,x) for x in X if x>0}
+
+def productZero(X,Y):
+  return {(x,x) for x in X if x==0}'''
+
+#A SMALLER RANGE IS USED HERE FOR A QUICKER OUTPUT! RANGE(-1000,1001) TAKES VERY LONG
+#X3 = set(range(-10,11))
+#posRange = set(range(1,11))
+#negRange = set(range(-10,0))
+#R3 = {(x,x) for x in X3}
+#R3 = R3.union({(-x,-y) for x in posRange for y in posRange})
+#R3 = R3.union({(-x,-y) for x in negRange for y in negRange})
+
+
+
+#USING ORIGINAL RANGE(-1000,1001)
+X3 = set(range(-1000,1001))
+posRange = set(range(1,1001))
+negRange = set(range(-1000,0))
+R3 = {(x,x) for x in X3}
+R3 = R3.union({(-x,-y) for x in posRange for y in posRange})
+R3 = R3.union({(-x,-y) for x in negRange for y in negRange})
+
+
+##########################################################
+##################### -- QUESTION 3 -- #####################
+# ---------------- (a) ----------------
+#PROPER PRIME FACTORS 
+def divides(x,y):
+    return y % x == 0
+def prime(y):
+    return y > 1 and 0 == len({x for x in range(2,y) if divides(x,y)})
+def factors(y):
+    return {x for x in range(1,y+1) if divides(x,y)}
+def properPrimeFactors(y):
+    return {x for x in factors(y) if prime(x)}
+
+#---------------- (b) ----------------
+#DISJOINT
+def disjoint(S):
+ 
+  return {(x,y) for y in S for x in S if (prime (y) or prime(x)) \
+          or not ((properPrimeFactors(x)<=properPrimeFactors(y)) \
+                  or (properPrimeFactors(x)>=properPrimeFactors(y)))}
+
+      
+# ---------------- (c)---------------- 
+
+symmetric=None
+reflexive={1,2}
+transitive={1,2,3}
+
+
+##########################################################
+##################### -- QUESTION 4 -- #####################
+
+#------------------ (a) ----------------------
+def square(n):
+     return exists((range(0,n)), lambda k: k*k == n)
+
+#------------------ (b) ----------------------
+def pythagorean(S):
+  return {(x,y) for x in S for y in S if (square(x*x+y*y)) or (square(x*x-y*y)) or (square(y*y-x*x))}
+
+
+"""
+def function (X):
+  A = set()
+  for x in range (0,150):
+    if helper(x,X)==False:
+      A.add(x)
+  B = A.union(X)
+  return B """
+
+
+def function ():
+  A = set ()
+  for x in range (401,600):
+    if prime(x) == True:
+      A.add(x)
+      #print(x)
+  #print(A)
+  return A
+
+def helper (x, X):
+  S = set()
+  S.add(x) #add 1
+  S = S.union(X)
+  S = pythagorean(S) 
+
+
+#READ THIS!!! I talked through this part with a CS350 classmate (Thomas Nguyen)
+
+  
+S={1,2,4,7,8,9,13,14,16,21,22,23,31,33,37, 257, 131, 277, 389, 263, 137, \
+   317, 139, 269, 271, 367, 149, 151, 397, 281, 283, 157, 163, 293, 167, 43, \
+   353, 173, 307, 47, 359, 179, 53, 311, 313, 59, 61, 181, 383, 193, 67, 197, \
+   71, 73, 241, 79, 337, 83, 89, 331, 347, 349, 199, 223, 97, 227, 101, 103, 379, \
+   233, 107, 109, 239, 229, 113, 211, 373, 251, 191, 127, 577, 521, 523, 401, \
+   409, 541, 419, 421, 557, 431, 433, 563, 439, 569, 443, 449, 457, 587, 461, 463, 593}
+  
+
+#------------------ (c) ----------------------
+def anotherPrimeSquare (ps):
+  P = 1
+  for x in ps:
+    P=x*P
+  return (P+1)
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     
